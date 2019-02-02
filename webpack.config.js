@@ -1,7 +1,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const OptimizeJsPlugin = require('optimize-js-plugin');
 
-const plugins = [
+const plugins= [
     new HtmlWebpackPlugin ({
         template: 'src/index.html',
         filename: 'index.html',
@@ -9,9 +10,20 @@ const plugins = [
 })];
     
 
-module.exports = (env) => {
 
+
+    
+module.exports = (env) => {
     const environment = env || 'production';
+    if (env === 'production') {
+        plugins.push(
+            new OptimizeJsPlugin({
+                sourceMap: false
+            })
+        );
+    }
+
+
     return {
         
         
@@ -21,6 +33,13 @@ module.exports = (env) => {
             path: path.resolve(__dirname, 'build'),
             filename: 'app.bundle.js'
         },
+        plugins: [
+        new HtmlWebpackPlugin({
+            hash: true,
+            filename: 'index.html' 
+        })
+   ],
+
         module: {
             rules: [
                 {
@@ -42,6 +61,7 @@ module.exports = (env) => {
              ]
             }
         ]
-     }
-    }
+     },
+        plugins: plugins
+    } 
 };
