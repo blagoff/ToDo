@@ -1,18 +1,14 @@
-const path = require('path');
+const path = require('path'); 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const OptimizeJsPlugin = require('optimize-js-plugin');
 
-const plugins= [
+const plugins = [
     new HtmlWebpackPlugin ({
         template: 'src/index.html',
         filename: 'index.html',
         inject: 'body'
 })];
-    
 
-
-
-    
 module.exports = (env) => {
     const environment = env || 'production';
     if (env === 'production') {
@@ -22,46 +18,45 @@ module.exports = (env) => {
             })
         );
     }
-
-
+    
     return {
-        
-        
         mode: environment,
         entry: './src/index.js',
         output: {
             path: path.resolve(__dirname, 'build'),
-            filename: 'app.bundle.js'
+            filename: 'app.' + environment + '.bundle.js'
         },
-        plugins: [
-        new HtmlWebpackPlugin({
-            hash: true,
-            filename: 'index.html' 
-        })
-   ],
-
+        
+        optimization: {
+            minimize: false
+        },
+        
         module: {
             rules: [
                 {
                     test: /\.js$/,
-                    exclude: /node_modules/,
                     loader: "babel-loader",
-                },
-
-    {
-        test: /\.css$/,
-        use: [
-            { loader: 'style-loader'},
-            {
-                loader: 'css-loader',
-                options: {
-                    modules: true
+                    options: {
+                        plugins: env !== 'production' ? ["react-hot-loader/babel"] : []
                     }
+                },
+                {
+                    test: /\.css$/,
+                    use: [
+                        {
+                            loader: 'style-loader'
+                        },
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                modules: true
+                            }
+                        }
+                    ]
                 }
-             ]
-            }
-        ]
-     },
-        plugins: plugins, 
+            ]
+        },
+        plugins
     } 
 };
+
